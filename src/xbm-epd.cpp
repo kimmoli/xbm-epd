@@ -19,18 +19,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 int main(int argc, char *argv[])
 {
+    QString outputFileName;
+
     if (argc < 2)
     {
         printf("xbm-epd version " APPVERSION " (C) kimmoli 2014\n\n");
-        printf("xbm-epd inputimagefilen.ame\n");
+        printf("xbm-epd inputfile {outputfile}\n");
         return 0;
     }
 
-    printf("Writing output to %s\n", qPrintable(QString("%1.xbm").arg(QString(argv[1]).split('.').at(0))));
+    if (argc == 3)
+    {
+        outputFileName = QString(argv[2]);
+    }
+    else
+    {
+        outputFileName = QString("%1.xbm").arg(QString(argv[1]).split('.').at(0));
+    }
+
+    printf("Writing output to %s\n", qPrintable(outputFileName));
 
     Converter* converter = new(Converter);
 
-    converter->convert(QString(argv[1]), QString("%1.xbm").arg(QString(argv[1]).split('.').at(0)));
+    converter->convert(QString(argv[1]), outputFileName);
 
     delete converter;
     return 1;
