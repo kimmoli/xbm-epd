@@ -11,9 +11,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "converter.h"
 #include <QSettings>
 #include <QCoreApplication>
-#include <QThread>
 #include <QDebug>
 #include <QImage>
+#include <QTransform>
+
 
 Converter::Converter(QObject *parent) :
     QObject(parent)
@@ -26,12 +27,20 @@ Converter::~Converter()
 
 void Converter::convert(QString inputFileName, QString outputFileName)
 {
-    QImage inImg, monoImg, outImg;
+    QImage inImg(inputFileName);
 
-    inImg.load(inputFileName);
+    QImage outImg = inImg;
 
-    monoImg = inImg.convertToFormat(QImage::Format_Mono, Qt::MonoOnly);
-    outImg = monoImg.scaled(264, 176, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    if (inImg.height() > inImg.width())
+    {
+        QTransform rot;
+        rot.rotate(-90);
+
+        outImg = outImg.transformed(rot);
+    }
+
+    outImg = outImg.convertToFormat(QImage::Format_Mono, Qt::MonoOnly);
+    outImg = outImg.scaled(264, 176, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     outImg.save(outputFileName, "XBM");
 }
